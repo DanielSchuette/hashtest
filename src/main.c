@@ -1,15 +1,29 @@
 #include <stdio.h>
-#include "custom.h"
 #include "hashtest.h"
+#include "custom.h"
 
 #define TABLE_SIZE 4096
 
-int main(void)
-{
-    size_t h;
+char *progname;
 
-    h = hash("hash me!", TABLE_SIZE);
-    printf("hashed: %lu\n", h);
+int main(int argc, char **argv)
+{
+    ht_config config;
+    ht_result result;
+
+    progname = *argv;
+
+    /* create configuration, TODO: move to cli params */
+    config.max_per_run = 5000;
+    config.outfile = NULL;
+    config.testfile = "data/dict.ht";
+    config.table_size = TABLE_SIZE;
+    config.total_runs = 10;
+
+    /* run tests and save the results to `config.outfile' */
+    result = ht_run(&config, hash);
+    ht_dump_result(&result);
+    ht_save_result(&result);
 
     return 0;
 }
