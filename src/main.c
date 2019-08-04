@@ -14,11 +14,11 @@ int main(int argc, char **argv)
     progname = *argv;
 
     /* create configuration, TODO: move to cli params */
-    config.max_per_run = 5000;
+    config.max_per_run = 200000;
     config.outfile = NULL;
-    config.testfile = "data/dict.ht";
+    config.testfile = "data/emails.ht"; /* "data/dict.ht" */
     config.table_size = TABLE_SIZE;
-    config.total_runs = 10;
+    config.total_runs = 3;
 
     /* run tests and save the results to `config.outfile' */
     result = ht_run(&config, hash);

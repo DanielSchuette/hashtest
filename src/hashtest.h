@@ -23,6 +23,7 @@ typedef struct {
     unsigned int max_list_len;  /* highest number of nodes in a single list */
     unsigned int min_list_len;  /* smallest number of nodes in a single list */
     unsigned long elapsed;      /* total microsecs elapsed (CPU time) */
+    unsigned int hashes_done;   /* number of hashes that were actually done */
 
     /*
      * `outtab' is a table of `size' integers. Every  element is the number of

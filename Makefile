@@ -28,7 +28,7 @@ test: $(BIN_DIR)/$(BIN)
 	@./$<
 
 clean:
-	@rm -f $(SRC_DIR)/*.o $(BIN_DIR)/$(BIN)
+	rm -f $(SRC_DIR)/*.o $(BIN_DIR)/$(BIN)
 	@rmdir $(BIN_DIR) 2>/dev/null || echo "no build directory found"
 
 help:

@@ -1,5 +1,6 @@
 #define _POSIX_C_SOURCE 200809L /* getline() */
-#include "errno.h"
+#include <errno.h>
+#include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -52,7 +53,8 @@ static inline ht_result create_empty_result(void)
 static inline void calc_results(ht_result *result, node_t **hashtab)
 {
     unsigned int i, zeros, max, min;
-    zeros = max = min = 0;
+    zeros = max = 0;
+    min = INT_MAX;
 
     for (i = 0; i < result->config->table_size; i++) {
         unsigned int length = 0;
@@ -75,7 +77,7 @@ static inline void calc_results(ht_result *result, node_t **hashtab)
 
 ht_result ht_run(ht_config *config, ht_func hash_func)
 {
-    int i, err;
+    int i, err, hashes;
     FILE *file;
     struct timespec ts_pre, ts_post;
     ht_result result;
@@ -86,24 +88,27 @@ ht_result ht_run(ht_config *config, ht_func hash_func)
         fail("failed to open file %s: %s", config->testfile, strerror(errno));
 
     /* timing starts here */
-    err = clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts_pre);
+    err = clock_gettime(CLOCK_REALTIME, &ts_pre);
     if (err) fail("failed to get CPU time: %s", strerror(errno));
 
     for (i = 0; i < config->total_runs; i++) {
-        int hashes = 0;
+        int j;
         ssize_t nread = 1;
 
         /*
          * To remember only the last iteration, every existing hash table is
          * free'd and freshly allocated.
          */
+        debug_log("iter=%d/%d", i+1, config->total_runs);
+        hashes = 0; /* reset number of hashes in this particular run */
         if (hashtab) ht_free(hashtab, config->table_size);
         hashtab = (node_t **)malloc(sizeof(node_t *)*config->table_size);
+
         if (!hashtab)
             fail("failed to allocate hash table: %s", strerror(errno));
         else
-            for (i = 0; i < config->table_size; i++)
-                hashtab[i] = NULL;
+            for (j = 0; j < config->table_size; j++)
+                hashtab[j] = NULL;
 
         while (hashes < config->max_per_run) {
             unsigned int h;
@@ -137,7 +142,7 @@ ht_result ht_run(ht_config *config, ht_func hash_func)
     }
 
     /* stop timing after all hashes are calculated */
-    err = clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts_post);
+    err = clock_gettime(CLOCK_REALTIME, &ts_post);
     if (err) fail("failed to get CPU time: %s", strerror(errno));
 
     err = fclose(file); /* this is not strictly necessary, though */
@@ -146,8 +151,10 @@ ht_result ht_run(ht_config *config, ht_func hash_func)
 
     /* populate a result struct */
     result = create_empty_result();
-    result.elapsed = ts_post.tv_nsec/1000 - ts_pre.tv_nsec/1000; /* microsecs */
+    result.elapsed = (ts_post.tv_nsec - ts_pre.tv_nsec)/1000000; /* nanosecs */
+    result.elapsed += (ts_post.tv_sec - ts_pre.tv_sec)*1000;     /* secs */
     result.config = config;
+    result.hashes_done = hashes;
     calc_results(&result, hashtab);
 
     return result;
@@ -155,13 +162,16 @@ ht_result ht_run(ht_config *config, ht_func hash_func)
 
 void ht_dump_result(ht_result *result)
 {
-    fprintf(stderr, "time elapsed: %ld microsecs\n", result->elapsed);
-    fprintf(stderr, "table size: %d\n", result->config->table_size);
-    fprintf(stderr, "total runs: %d\n", result->config->total_runs);
-    fprintf(stderr, "hashes per run: %d\n", result->config->max_per_run);
-    fprintf(stderr, "longest list: %d\n", result->max_list_len);
-    fprintf(stderr, "shortest list: %d\n", result->min_list_len);
-    fprintf(stderr, "number of zero-length lists: %d\n", result->zero_lists);
+    fprintf(stderr, "time elapsed:\t\t\t%ld millisecs\n", result->elapsed);
+    fprintf(stderr, "table size:\t\t\t%d\n", result->config->table_size);
+    fprintf(stderr, "total runs:\t\t\t%d\n", result->config->total_runs);
+    fprintf(stderr, "max hashes per run:\t\t%d\n", result->config->max_per_run);
+    fprintf(stderr, "actual hashes per run:\t\t%d\n", result->hashes_done);
+    fprintf(stderr, "longest list:\t\t\t%d\n", result->max_list_len);
+    fprintf(stderr, "shortest list:\t\t\t%d\n", result->min_list_len);
+    fprintf(stderr, "number of zero-length lists:\t%d (%.2f%%)\n",
+            result->zero_lists,
+            (float)result->zero_lists/(float)result->config->table_size*100);
 }
 
 void ht_save_result(ht_result *result)

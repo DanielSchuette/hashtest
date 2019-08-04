@@ -10,7 +10,7 @@ size_t hash(char *str, unsigned int tbl_size)
 
     h = 0;
     for (ptr = str; *ptr != '\0'; ptr++)
-        h += *ptr;
+        h = h*31 + *ptr;
 
     return h % tbl_size;
 }
