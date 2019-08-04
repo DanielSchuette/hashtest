@@ -1,6 +1,7 @@
 #ifndef _HASHTEST_H_
 #define _HASHTEST_H_
 
+#include <stdio.h>
 #include <sys/types.h>
 
 /* provide a string to hash and the table size to a hash function */
@@ -24,6 +25,7 @@ typedef struct {
     unsigned int min_list_len;  /* smallest number of nodes in a single list */
     unsigned long elapsed;      /* total microsecs elapsed (CPU time) */
     unsigned int hashes_done;   /* number of hashes that were actually done */
+    FILE *outfile;              /* results are saved in JSON format */
 
     /*
      * `outtab' is a table of `size' integers. Every  element is the number of
@@ -39,9 +41,7 @@ void ht_save_result(ht_result *);
 
 /*
  * The hash table used is a table of `node_t *' which build up singly-linked
- * lists as soon as >= 2 items produce the same hash. Resources are *not* freed
- * because the program terminates anyways as soon as all tests are run. The
- * kernel will clean up everything.
+ * lists as soon as >= 2 items produce the same hash.
  */
 typedef struct NODE {
     char *data;

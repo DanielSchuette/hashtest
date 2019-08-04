@@ -2,7 +2,6 @@
 #include <errno.h>
 #include <limits.h>
 #include <stdarg.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -43,9 +42,11 @@ static inline ht_result create_empty_result(void)
 
     result.config = NULL;
     result.outtab = NULL;
+    result.outfile = NULL;
     result.max_list_len = 0;
     result.min_list_len = 0;
     result.zero_lists = 0;
+    result.hashes_done = 0;
 
     return result;
 }
@@ -77,7 +78,7 @@ static inline void calc_results(ht_result *result, node_t **hashtab)
 
 ht_result ht_run(ht_config *config, ht_func hash_func)
 {
-    int i, err, hashes;
+    int i, err, hashes = 0;
     FILE *file;
     struct timespec ts_pre, ts_post;
     ht_result result;
@@ -127,10 +128,12 @@ ht_result ht_run(ht_config *config, ht_func hash_func)
             node = (node_t *)malloc(sizeof(node_t));
             if (!node)
                 fail("failed to allocate new node: %s", strerror(errno));
+
             node->data = (char *)malloc(sizeof(char)*BUFSIZ);
             if (!node->data)
                 fail("failed to allocate data: %s", strerror(errno));
             strncpy(node->data, hash_val, BUFSIZ);
+
             node->data[BUFSIZ-1] = '\0';
             node->next = NULL;
             hashtab[h] = add_node(hashtab[h], node);
@@ -145,10 +148,6 @@ ht_result ht_run(ht_config *config, ht_func hash_func)
     err = clock_gettime(CLOCK_REALTIME, &ts_post);
     if (err) fail("failed to get CPU time: %s", strerror(errno));
 
-    err = fclose(file); /* this is not strictly necessary, though */
-    if (err)
-        fail("failed to close file %s: %s", config->testfile, strerror(errno));
-
     /* populate a result struct */
     result = create_empty_result();
     result.elapsed = (ts_post.tv_nsec - ts_pre.tv_nsec)/1000000; /* nanosecs */
@@ -156,6 +155,11 @@ ht_result ht_run(ht_config *config, ht_func hash_func)
     result.config = config;
     result.hashes_done = hashes;
     calc_results(&result, hashtab);
+
+    err = fclose(file);
+    if (err)
+        fail("failed to close file %s: %s", config->testfile, strerror(errno));
+    ht_free(hashtab, config->table_size);
 
     return result;
 }
