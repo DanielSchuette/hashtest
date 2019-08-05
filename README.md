@@ -14,6 +14,10 @@ make clean # removes the binary and all object files
 Please open an issue if you encounter any bugs!
 
 ## Running a Test
+Not yet documented.
+
+## Viewing Test Results
+Not yet documented.
 
 ## License
 Code in this repository is licensed under the [GPLv3 license](./LICENSE.md).

@@ -3,6 +3,12 @@
 
 #include "hashtest.h"
 
+/* default configuration */
+int max_per_run = 20000;
+char *outfile = NULL;
+char *testfile = "data/dict.ht";
+int total_runs = 3;
+
 /*
  * A function `hash' with the signature below is expected by the test runner.
  * Usually, this is the only place users need to modify. A pointer to `hash' is
