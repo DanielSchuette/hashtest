@@ -1,2 +1,3 @@
 hashtest
 *.o
+out.json

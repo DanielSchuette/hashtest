@@ -1,0 +1,19 @@
+body {
+    font-size: 18px;
+}
+
+.breadcrumb {
+    font-size: 24px !important;
+}
+
+.padded-top {
+    padding-top: 32px;
+}
+
+#stats-table {
+    display: none;
+}
+
+#graph {
+    display: none;
+}

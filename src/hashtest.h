@@ -9,7 +9,7 @@ typedef size_t (*ht_func)(char *, unsigned int);
 
 typedef struct {
     const char *testfile;       /* path to file with strings to hash */
-    const char *outfile;        /* if NULL: out.ht */
+    const char *outfile;        /* if NULL: out.json */
     unsigned int total_runs;    /* number of runs through `testfile' */
     unsigned int max_per_run;   /* max number of strings hashed every run */
     unsigned int table_size;    /* size of hash table */

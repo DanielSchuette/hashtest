@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Bootstrap CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+
+    <!-- GraphJS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+
+    <title>hashtest: Results</title>
+</head>
+<body>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="?graph">Graph</a></li>
+        <li class="breadcrumb-item"><a href="?statistics">Statistics</a></li>
+      </ol>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+                <h2>File Upload</h2>
+                <p>Please upload your .json output file below.</p>
+                <input type="file" id="fileUpload" name="files[]">
+                <output id="list"></output>
+            </div>
+            <div class="col-sm-2"></div>
+        </div>
+        <div class="row padded-top">
+            <div class="col-sm-2"></div>
+
+            <!-- Begin Content Container -->
+            <div class="col-sm-8">
+
+                <!-- Stats Table -->
+                <table class="table" id="stats-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Longest list</th>
+                            <td id="td-1"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Shortest list</th>
+                            <td id="td-2"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Number of zero length lists</th>
+                            <td id="td-3"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Maximum hashes per run</th>
+                            <td id="td-4"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Actual number of hashes per run</th>
+                            <td id="td-5"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Table size</th>
+                            <td id="td-6"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Total time elapsed</th>
+                            <td id="td-7"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Time elapsed per run</th>
+                            <td id="td-8"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Total number of runs</th>
+                            <td id="td-9"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Graph Canvas -->
+                <canvas id="graph" width="400" height="200"></canvas>
+
+            </div>
+            <!-- End Content Container -->
+
+            <div class="col-sm-2"></div>
+        </div>
+    </div>
+    <script src="./main.js"></script>
+</body>
+</html>

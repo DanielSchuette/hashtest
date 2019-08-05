@@ -53,9 +53,12 @@ static inline ht_result create_empty_result(void)
 
 static inline void calc_results(ht_result *result, node_t **hashtab)
 {
-    unsigned int i, zeros, max, min;
-    zeros = max = 0;
-    min = INT_MAX;
+    unsigned int i, zeros = 0, max = 0, min = INT_MAX;
+    unsigned int *outtab;
+
+    outtab = (unsigned int *)malloc(sizeof(unsigned int) *
+                                    result->config->table_size);
+    if (!outtab) fail("failed to allocate output table: %s", strerror(errno));
 
     for (i = 0; i < result->config->table_size; i++) {
         unsigned int length = 0;
@@ -66,14 +69,13 @@ static inline void calc_results(ht_result *result, node_t **hashtab)
         if (length == 0) zeros++;
         if (length > max) max = length;
         if (length < min) min = length;
+        outtab[i] = length;
     }
 
     result->zero_lists = zeros;
     result->max_list_len = max;
     result->min_list_len = min;
-
-    /* TODO: implement */
-    result->outtab = NULL;
+    result->outtab = outtab;
 }
 
 ht_result ht_run(ht_config *config, ht_func hash_func)
@@ -150,16 +152,21 @@ ht_result ht_run(ht_config *config, ht_func hash_func)
 
     /* populate a result struct */
     result = create_empty_result();
+    if (!config->outfile)
+        config->outfile = "out.json";
+    result.outfile = fopen(config->outfile, "w");
+    if (!result.outfile)
+        fail("failed to open %s: %s", config->outfile, strerror(errno));
     result.elapsed = (ts_post.tv_nsec - ts_pre.tv_nsec)/1000000; /* nanosecs */
     result.elapsed += (ts_post.tv_sec - ts_pre.tv_sec)*1000;     /* secs */
     result.config = config;
     result.hashes_done = hashes;
     calc_results(&result, hashtab);
 
+    ht_free(hashtab, config->table_size);
     err = fclose(file);
     if (err)
         fail("failed to close file %s: %s", config->testfile, strerror(errno));
-    ht_free(hashtab, config->table_size);
 
     return result;
 }
@@ -180,7 +187,29 @@ void ht_dump_result(ht_result *result)
 
 void ht_save_result(ht_result *result)
 {
-    /* TODO: implement */
+    int i;
+
+    fprintf(result->outfile, "{\n");
+    fprintf(result->outfile, "\t\"time_elapsed\": \"%lu\",\n",
+            result->elapsed);
+    fprintf(result->outfile, "\t\"table_size\": \"%d\",\n",
+            result->config->table_size);
+    fprintf(result->outfile, "\t\"total_runs\": \"%d\",\n",
+            result->config->total_runs);
+    fprintf(result->outfile, "\t\"max_hashes_per_run\": \"%d\",\n",
+            result->config->max_per_run);
+    fprintf(result->outfile, "\t\"actual_hashes_per_run\": \"%d\",\n",
+            result->hashes_done);
+    fprintf(result->outfile, "\t\"longest_list\": \"%d\",\n",
+            result->max_list_len);
+    fprintf(result->outfile, "\t\"shortest_list\": \"%d\",\n",
+            result->min_list_len);
+    fprintf(result->outfile, "\t\"number_of_zero_length_lists\": \"%d\",\n",
+            result->zero_lists);
+    fprintf(result->outfile, "\t\"list_table\": [");
+    for (i = 0; i < (result->config->table_size-1); i++)
+        fprintf(result->outfile, "%u, ", result->outtab[i]);
+    fprintf(result->outfile, "%d]\n}", result->outtab[++i]);
 }
 
 node_t *add_node(node_t *head, node_t *new)
