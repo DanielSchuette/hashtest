@@ -34,7 +34,10 @@ Test values for hashing are provided via a file (see `data/` for two examples). 
 ## Viewing Test Results
 To view the result in a convenient way, open `/ui/index.html` in a browser. Upload the test output file to be able to inspect statistics or a graphical representation of the hash table which was generated during the tests. This helps e.g. to identify certain hashes that might be overrepresented.
 
+### Statistics Output
 ![UI example 1](./assets/ui_example_1.png)
+
+### Graph Output
 ![UI example 2](./assets/ui_example_2.png)
 
 ## License
