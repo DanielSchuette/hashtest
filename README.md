@@ -14,10 +14,16 @@ make clean # removes the binary and all object files
 Please open an issue if you encounter any bugs!
 
 ## Running a Test
-Not yet documented.
+A test configuration is provided via options to the binary. For an overview, type:
+
+```bash
+hashtest -h
+```
+
+Test values for hashing are provided via a file (see `data/` for two examples). The output of a test run is saved to `out.json` by default. If `hashtest` was compiled with `-DDEBUG`, test results are printed to `stderr`, too.
 
 ## Viewing Test Results
-Not yet documented.
+To view the result in a convenient way, open `/ui/index.html` in a browser. Upload the test output file to be able to inspect statistics or a graphical representation of the hash table which was generated during the tests. This helps e.g. to identify certain hashes that might be overrepresented.
 
 ## License
 Code in this repository is licensed under the [GPLv3 license](./LICENSE.md).
