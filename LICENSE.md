@@ -631,8 +631,8 @@ to attach them to the start of each source file to most effectively
 state the exclusion of warranty; and each file should have at least
 the "copyright" line and a pointer to where the full notice is found.
 
-  This software is an example of a simple expression parser that takes
-math expressions and turns them into 68k assembly code.
+  This software provides a framework for testing performance characteristics
+of hashing algorithms and includes a user interface for presenting results.
 
     Copyright (C) 2019 Daniel Schuette
 
@@ -654,7 +654,7 @@ Also add information on how to contact you by electronic and paper mail.
   If the program does terminal interaction, make it output a short
 notice like this when it starts in an interactive mode:
 
-    Compiler Copyright (C) 2019 Daniel Schuette
+    HashTest Copyright (C) 2019 Daniel Schuette
     This program comes with ABSOLUTELY NO WARRANTY.
     This is free software, and you are welcome to redistribute it
     under certain conditions.
